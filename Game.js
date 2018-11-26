@@ -5,9 +5,6 @@ class Game
    */
   constructor()
   {
-    gameNs.player = new Player(0, 0, 50);
-    gameNs.camera = new Camera();
-
     this.img = new Image();
     this.img.src = "resources/debugmap.png";
 
@@ -15,6 +12,9 @@ class Game
       width: 2560,
       height: 2048,
     }
+
+    gameNs.player = new Player(0, 0, 50);
+    gameNs.camera = new Camera(this.bounds.width, this.bounds.height);
   }
 
   /**
@@ -119,8 +119,7 @@ class Game
     console.log(e.clientX);
     console.log(e.clientY);
 
-    gameNs.player.warp(e.clientX,e.clientY);
-
-    console.log("CLICK!");
+    gameNs.player.warp(e.clientX+gameNs.camera.pos.x,e.clientY+gameNs.camera.pos.y);
+    gameNs.camera.panTo(e.clientX,e.clientY);
   }
 }

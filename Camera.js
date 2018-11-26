@@ -3,12 +3,18 @@ class Camera
   /**
    * Constructor for the camera object
    */
-  constructor()
+  constructor(w,h)
   {
     var canvas = document.getElementById('mycanvas');
     this.width = canvas.width;
 
     this.pos = { x: 0, y: 0};
+    this.bounds = {
+      x: 0,
+      y: 0,
+      w: w,
+      h: h,
+    };
 
     this.zoomScale = 1;
     this.zoomSpeed = 0.01;
@@ -17,17 +23,17 @@ class Camera
     this.zoomMax = 2;
     this.zoomMin = 0.5;
 
-    //flags
-    this.smoothZoom = false;
-
+    this.panSpeed = {
+      x: 2,
+      y: 2,
+    };
+    this.panNew = {
+      x: 0,
+      y: 0,
+    };
+    this.panning = false;
   }
 
-  /**
-   * Returns the current zoom level
-   */
-  getZoom(){
-    return this.zoomScale;
-  }
   /**
    * Sets the zoom level
    * @param {number} val New zoom level
@@ -62,8 +68,35 @@ class Camera
     this.zoomScale += val;
   }
 
+  /**
+   * Pan in a direction by a set distance
+   * @param {number} x x direction
+   * @param {number} y y direction
+   */
+  pan(x,y)
+  {
+    this.pos.x += x;
+    this.pos.y += y;
+    this.panning = false;
+  }
+
+  /**
+   * Pan to a new location over a number of frames
+   * @param {number} x x coordinate
+   * @param {number} y y coordinate
+   */
+  panTo(x,y)
+  {
+    console.log("panTo");
+    this.panNew.x = x+this.pos.x;
+    this.panNew.y = y+this.pos.y;
+
+    this.panning = true;
+  }
+
   update(trackPos)
   {
+    // Zoom logic
     if(this.zoomScale > this.zoomMax){
       this.zoomScale = this.zoomMax;
       this.zooming = false;
@@ -84,6 +117,53 @@ class Camera
         this.zoomScale = this.zoomNew;
         this.zooming = false;
       }
+    }
+
+    // Pan logic
+    if(this.pos.x > this.bounds.x + this.bounds.w){
+      this.pos.x = this.bounds.x + this.bounds.w;
+      this.panning = false;
+    }
+    else if (this.pos.x < this.bounds.x){
+      this.pos.x = this.bounds.x;
+      this.panning = false;
+    }
+    else if(this.pos.y > this.bounds.y + this.bounds.h){
+      this.pos.y = this.bounds.y + this.bounds.h;
+      this.panning = false;
+    } 
+    else if (this.pos.y < this.bounds.y){
+      this.pos.y = this.bounds.y;
+      this.panning = false;
+    }
+
+    if(this.panning)
+    {
+      console.log("PANNING");
+      if(this.pos.x > this.panNew.x){
+        this.pos.x -= this.panSpeed.x;
+      }
+      else if(this.pos.x < this.panNew.x){
+        this.pos.x += this.panSpeed.x;
+      }
+      if(this.pos.y > this.panNew.y){
+        this.pos.y -= this.panSpeed.y;
+      }
+      else if(this.pos.y < this.panNew.y){
+        this.pos.y += this.panSpeed.y;
+      }
+      if(Math.abs(this.pos.x - this.panNew.x) < this.panSpeed.x){
+        this.pos.x = this.panNew.x;
+      }
+      if(Math.abs(this.pos.y - this.panNew.y) < this.panSpeed.y){
+        this.pos.y = this.panNew.y;
+      }
+      if(this.pos.x === this.panNew.x && this.pos.y === this.panNew.y){
+        this.panning = false;
+      }
+      
+      console.log(this.pos);
+      console.log(this.panNew);
     }
   }
 
