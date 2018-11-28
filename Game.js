@@ -14,7 +14,14 @@ class Game
     }
 
     gameNs.player = new Player(0, 0, 50);
-    gameNs.camera = new Camera(this.bounds.width, this.bounds.height);
+    gameNs.camera = new Camera(
+        this.bounds.width/2,
+        this.bounds.height/2,
+        window.innerWidth,
+        window.innerHeight,
+        this.bounds.width,
+        this.bounds.height,
+    );
   }
 
   /**
@@ -30,9 +37,8 @@ class Game
   /**
   * Updates the game object
   */
-  update()
-  {
-    var now = Date.now();
+  update() {
+    const now = Date.now();
     
     var deltaTime = (now - gameNs.game.previousTime);
     gameNs.game.previousTime = now;
@@ -55,8 +61,6 @@ class Game
     gameNs.camera.draw(canvas, ctx);
     gameNs.player.draw(canvas, ctx, deltaTime);
   }
-
-
 
   /**
   * Looks for keypresses and then carries out the appropriate function
@@ -88,27 +92,27 @@ class Game
       console.log("DOWN");
     }
 
-    if(e.keyCode === 107)//zoomBy plus
+    if(e.keyCode === 107)//zoomBy(1)
     {
       gameNs.camera.zoomBy(1);
     }
 
-    if(e.keyCode === 109)//zoomBy minus
+    if(e.keyCode === 109)//zoomBy(-1)
     {
       gameNs.camera.zoomBy(-1);
     }
 
-    if(e.keyCode === 97)
+    if(e.keyCode === 97) // zoomTo(1)
     {
       gameNs.camera.zoomTo(1);
     }
 
-    if(e.keyCode === 98)
+    if(e.keyCode === 98) // zoomTo(0.5)
     {
       gameNs.camera.zoomTo(0.5);
     }
 
-    if(e.keyCode === 99)
+    if(e.keyCode === 99) // zoomTo(1.5)
     {
       gameNs.camera.zoomTo(1.5);
     }

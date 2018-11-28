@@ -3,12 +3,16 @@ class Camera
   /**
    * Constructor for the camera object
    */
-  constructor(w,h)
+  constructor(x,y,w,h, wMax, hMax)
   {
     var canvas = document.getElementById('mycanvas');
     this.width = canvas.width;
 
-    this.pos = { x: 0, y: 0};
+    this.pos = { x: x, y: y};
+    this.size = {
+      w: w,
+      h: h,
+    };
     this.bounds = {
       x: 0,
       y: 0,
@@ -88,8 +92,8 @@ class Camera
   panTo(x,y)
   {
     console.log("panTo");
-    this.panNew.x = x+this.pos.x;
-    this.panNew.y = y+this.pos.y;
+    this.panNew.x = x+this.pos.x-(this.size.w/2);
+    this.panNew.y = y+this.pos.y-(this.size.h/2);
 
     this.panning = true;
   }
@@ -172,12 +176,11 @@ class Camera
    * @param  {canvas} canvas
    * @param  {context} ctx
    */
-  draw(canvas, ctx)
-  {
+  draw(canvas, ctx) {
     ctx.setTransform(
       this.zoomScale,             // Horizontal Scale
-      0,                          // Horizontal Scew
-      0,                          // Vertical Scew
+      0,                          // Horizontal Skew
+      0,                          // Vertical Skew
       this.zoomScale,             // Vertical Scale
       -this.zoomScale*this.pos.x, // Horizontal Move
       -this.zoomScale*this.pos.y, // Vertical Move
