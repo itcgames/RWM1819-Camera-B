@@ -1,25 +1,27 @@
 class Camera
 {
-  /**
-   * Constructor for the camera object
-   */
-  constructor(x,y,w,h, wMax, hMax)
-  {
-    var canvas = document.getElementById('mycanvas');
-    this.width = canvas.width;
 
-    this.pos = { x: x, y: y};
+  constructor(x,y,w,h) {
+
+    // Current position of the camera (top-left corner)
+    this.pos = {
+      x: x,
+      y: y
+    };
+    // Size of the camera window
     this.size = {
       w: w,
       h: h,
     };
+    // The area the camera is confined to
     this.bounds = {
       x: 0,
       y: 0,
-      w: w,
-      h: h,
+      w: 2000,
+      h: 2000,
     };
 
+    // Zoom variables
     this.zoomScale = 1;
     this.zoomSpeed = 0.01;
     this.zoomNew = 0;
@@ -27,6 +29,7 @@ class Camera
     this.zoomMax = 2;
     this.zoomMin = 0.5;
 
+    // Pan variables
     this.panSpeed = {
       x: 2,
       y: 2,
@@ -36,6 +39,50 @@ class Camera
       y: 0,
     };
     this.panning = false;
+  }
+
+  /**
+   * Defines the area the camera can move in
+   * @param x default 0
+   * @param y default 0
+   * @param maxW max width, default 2000
+   * @param maxH max height, default 2000
+   */
+  setBounds(x,y,maxW,maxH){
+    this.bounds = {
+      x: x,
+      y: y,
+      w: maxW,
+      h: maxH,
+    };
+  }
+
+
+  /**
+   * Translates coordinates of the game world to their relative camera
+   * coordinates
+   * @param {number} x camera x-coordinate
+   * @param {number} x camera y-coordinate
+   * @returns {{x: number, y: number}} world coordinates
+   */
+  cameraToWorld(x,y){
+    return {
+      x: x + this.pos.x,
+      y: y + this.pos.y,
+    };
+  }
+
+  /**
+   * Translates coordinates of the camera to their relative world coordinates
+   * @param {number} x world x-coordinate
+   * @param {number} x world y-coordinate
+   * @returns {{x: number, y: number}} camera coordinates
+   */
+  worldToCamera(x,y){
+    return {
+      x: x - this.pos.x,
+      y: y - this.pos.y,
+    };
   }
 
   /**
@@ -86,20 +133,22 @@ class Camera
 
   /**
    * Pan to a new location over a number of frames
-   * @param {number} x x coordinate
-   * @param {number} y y coordinate
+   * @param {number} x x coordinate (world)
+   * @param {number} y y coordinate (world)
    */
-  panTo(x,y)
-  {
+  panTo(x,y) {
     console.log("panTo");
-    this.panNew.x = x+this.pos.x-(this.size.w/2);
-    this.panNew.y = y+this.pos.y-(this.size.h/2);
+
+    this.panNew.x = x;
+    this.panNew.y = y;
 
     this.panning = true;
   }
 
-  update(trackPos)
-  {
+  /**
+   * Updates the camera's zoom
+   */
+  zoomUpdate(){
     // Zoom logic
     if(this.zoomScale > this.zoomMax){
       this.zoomScale = this.zoomMax;
@@ -122,7 +171,10 @@ class Camera
         this.zooming = false;
       }
     }
+  }
 
+
+  panUpdate(){
     // Pan logic
     if(this.pos.x > this.bounds.x + this.bounds.w){
       this.pos.x = this.bounds.x + this.bounds.w;
@@ -135,7 +187,7 @@ class Camera
     else if(this.pos.y > this.bounds.y + this.bounds.h){
       this.pos.y = this.bounds.y + this.bounds.h;
       this.panning = false;
-    } 
+    }
     else if (this.pos.y < this.bounds.y){
       this.pos.y = this.bounds.y;
       this.panning = false;
@@ -165,10 +217,17 @@ class Camera
       if(this.pos.x === this.panNew.x && this.pos.y === this.panNew.y){
         this.panning = false;
       }
-      
+
       console.log(this.pos);
       console.log(this.panNew);
     }
+  }
+
+
+  update(trackPos)
+  {
+    this.zoomUpdate();
+    this.panUpdate();
   }
 
   /**

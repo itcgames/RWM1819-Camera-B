@@ -11,17 +11,18 @@ class Game
     this.bounds = {
       width: 2560,
       height: 2048,
-    }
+    };
 
     gameNs.player = new Player(0, 0, 50);
     gameNs.camera = new Camera(
-        this.bounds.width/2,
-        this.bounds.height/2,
-        window.innerWidth,
-        window.innerHeight,
-        this.bounds.width,
-        this.bounds.height,
+      0,
+      0,
+      window.innerWidth,
+      window.innerHeight,
+      //this.bounds.width,
+      //this.bounds.height,
     );
+    gameNs.camera.setBounds(0,0,this.bounds.width,this.bounds.height);
   }
 
   /**
@@ -122,8 +123,9 @@ class Game
   {
     console.log(e.clientX);
     console.log(e.clientY);
+    const click = gameNs.camera.cameraToWorld(e.clientX, e.clientY);
 
-    gameNs.player.warp(e.clientX+gameNs.camera.pos.x,e.clientY+gameNs.camera.pos.y);
+    gameNs.player.warp(click.x, click.y);
     gameNs.camera.panTo(e.clientX,e.clientY);
   }
 }
