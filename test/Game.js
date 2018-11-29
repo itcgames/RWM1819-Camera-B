@@ -45,9 +45,10 @@ class Game
     gameNs.game.previousTime = now;
 
     gameNs.player.update();
-    gameNs.camera.update(gameNs.player.pos);
+    gameNs.camera.follow(gameNs.player.pos.x,gameNs.player.pos.y);
+    gameNs.camera.update();
 
-    gameNs.game.draw(deltaTime)
+    gameNs.game.draw(deltaTime);
     window.requestAnimationFrame(gameNs.game.update);
   }
 
@@ -121,11 +122,9 @@ class Game
 
   clickHandler(e)
   {
-    console.log(e.clientX);
-    console.log(e.clientY);
     const click = gameNs.camera.cameraToWorld(e.clientX, e.clientY);
 
     gameNs.player.warp(click.x, click.y);
-    gameNs.camera.panTo(e.clientX,e.clientY);
+    //gameNs.camera.panTo(e.clientX,e.clientY);
   }
 }

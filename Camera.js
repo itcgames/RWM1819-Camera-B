@@ -13,6 +13,10 @@ class Camera
       w: w,
       h: h,
     };
+    this.origin = {
+      x: x + w/2,
+      y: y + h/2,
+    };
     // The area the camera is confined to
     this.bounds = {
       x: 0,
@@ -67,8 +71,8 @@ class Camera
    */
   cameraToWorld(x,y){
     return {
-      x: x + this.pos.x,
-      y: y + this.pos.y,
+      x: x + (this.pos.x-this.size.w/2),
+      y: y + (this.pos.y-this.size.h/2),
     };
   }
 
@@ -80,8 +84,8 @@ class Camera
    */
   worldToCamera(x,y){
     return {
-      x: x - this.pos.x,
-      y: y - this.pos.y,
+      x: x - (this.pos.x-this.size.w/2),
+      y: y - (this.pos.y-this.size.h/2),
     };
   }
 
@@ -176,23 +180,6 @@ class Camera
 
   panUpdate(){
     // Pan logic
-    if(this.pos.x > this.bounds.x + this.bounds.w){
-      this.pos.x = this.bounds.x + this.bounds.w;
-      this.panning = false;
-    }
-    else if (this.pos.x < this.bounds.x){
-      this.pos.x = this.bounds.x;
-      this.panning = false;
-    }
-    else if(this.pos.y > this.bounds.y + this.bounds.h){
-      this.pos.y = this.bounds.y + this.bounds.h;
-      this.panning = false;
-    }
-    else if (this.pos.y < this.bounds.y){
-      this.pos.y = this.bounds.y;
-      this.panning = false;
-    }
-
     if(this.panning)
     {
       console.log("PANNING");
@@ -224,10 +211,42 @@ class Camera
   }
 
 
-  update(trackPos)
+  follow(x,y){
+    if(this.panning === false){
+
+      this.pos.x += (x - this.pos.x)*0.8;
+      this.pos.y += (y - this.pos.y)*0.8;
+
+      console.log(this.pos);
+    }
+  }
+
+  update()
   {
     this.zoomUpdate();
     this.panUpdate();
+    this.checkBounds();
+  }
+
+  checkBounds(){
+    const topLeft = {
+      x: this.pos.x - (this.size.w / 2),
+      y: this.pos.y - (this.size.h / 2),
+    };
+
+    if (topLeft.x < this.bounds.x){
+      this.pos.x = this.bounds.x + (this.size.w/2);
+    }
+    if (topLeft.x + this.size.w > this.bounds.x + this.bounds.w){
+      this.pos.x = this.bounds.x + this.bounds.w - (this.size.w/2);
+    }
+
+    if (topLeft.y < this.bounds.y){
+      this.pos.y = this.bounds.y + (this.size.h/2);
+    }
+    if (topLeft.y + this.size.h > this.bounds.y + this.bounds.h){
+      this.pos.y = this.bounds.y + this.bounds.h - (this.size.h/2);
+    }
   }
 
   /**
@@ -241,8 +260,8 @@ class Camera
       0,                          // Horizontal Skew
       0,                          // Vertical Skew
       this.zoomScale,             // Vertical Scale
-      -this.zoomScale*this.pos.x, // Horizontal Move
-      -this.zoomScale*this.pos.y, // Vertical Move
+      -this.zoomScale*(this.pos.x-this.size.w/2), // Horizontal Move
+      -this.zoomScale*(this.pos.y-this.size.h/2), // Vertical Move
       );
   }
 }

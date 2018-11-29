@@ -8,7 +8,7 @@ class Player
     this.pos = {
       x: x,
       y: y,
-    }
+    };
     this.size = size;
 
     this.speed = 5;
@@ -61,6 +61,5 @@ class Player
   {
     this.pos.x = x;
     this.pos.y = y;
-    console.log(this.pos);
   }
 } 
